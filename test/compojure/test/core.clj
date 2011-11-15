@@ -65,6 +65,12 @@
           route (GET "/foo" []  resp)]
       (is (= (route (request :head "/foo"))
              (assoc resp :body nil)))))
+
+  (testing "OPTIONS requests"
+    (let [resp  {:status 200, :headers {"X-Foo" "foo"} :body nil}
+          route (OPTIONS "/foo" []  resp)]
+      (is (= (route (request :head "/foo"))
+             resp))))
   
   (testing "custom regular expressions"
     (expect [route-compile
