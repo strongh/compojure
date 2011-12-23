@@ -103,7 +103,7 @@
   #(apply routing % handlers))
 
 (defmacro defroutes
-  "Define a Ring handler function from a sequence of routes. The name may be
+  "Define a Ring handler function from a sequence of routes. The name may
   optionally be followed by a doc-string and metadata map."
   [name & routes]
   (let [[name routes] (name-with-attributes name routes)]
@@ -131,7 +131,7 @@
 
 (defmacro OPTIONS "Generate an OPTIONS route."
   [path args & body]
-  (compile-route :head path args body))
+  (compile-route :options path args body))
 
 (defmacro ANY "Generate a route that matches any method."
   [path args & body]
@@ -164,9 +164,23 @@
          ~(merge (apply hash-map (rest route)) re-context)))))
 
 (defmacro context
+  "Give all routes in the form a common path prefix and set of bindings.
+
+  The following example demonstrates defining two routes with a common
+  path prefix ('/user/:id') and a common binding ('id'):
+
+    (context \"/user/:id\" [id]
+      (GET \"/profile\" [] ...)
+      (GET \"/settings\" [] ...))"
   [path args & routes]
   `(#'if-route ~(context-route path)
      (#'wrap-context
        (fn [request#]
          (let-request [~args request#]
            (routing request# ~@routes))))))
+
+(defmacro let-routes
+  "Takes a vector of bindings and a body of routes. Equivalent to:
+  (let [...] (routes ...))"
+  [bindings & body]
+  `(let ~bindings (routes ~@body)))
