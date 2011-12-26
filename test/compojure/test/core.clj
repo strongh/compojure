@@ -69,7 +69,7 @@
   (testing "OPTIONS requests"
     (let [resp  {:status 200, :headers {"X-Foo" "foo"} :body nil}
           route (OPTIONS "/foo" []  resp)]
-      (is (= (route (request :head "/foo"))
+      (is (= (route (request :options "/foo"))
              resp))))
   
   (testing "custom regular expressions"
